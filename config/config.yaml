@@ -1,0 +1,17 @@
+env: "local"
+
+database:
+  dr_address: "localhost:9000"
+  db_user: "user"
+  db_pass: "123"
+
+http_server:
+  address: "localhost:3000"
+  timeout: 5s
+  idle_timeout: 60s
+
+redis:
+  address: "localhost:3001"
+  redis_user: "user"
+  redis_password: "123"
+
