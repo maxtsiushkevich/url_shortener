@@ -1,7 +1,8 @@
 database:
-    db_address: localhost:9000
+    db_address: localhost:5432
     db_user: user
     db_pass: 123
+    db_name: postgres
 
 http_server:
     address: localhost:3000

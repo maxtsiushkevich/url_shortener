@@ -17,6 +17,7 @@ type DbConfig struct {
 	Address  string `yaml:"db_address"`
 	User     string `yaml:"db_user"`
 	Password string `yaml:"db_pass"`
+	DbName   string `yaml:"db_name"`
 }
 
 type HTTPServerConfig struct {
