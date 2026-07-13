@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"url_shortener/internal/config"
+	handlers "url_shortener/internal/http"
+	"url_shortener/internal/service"
 	"url_shortener/internal/storage/postgres"
 )
 
@@ -34,9 +36,18 @@ func main() {
 	}
 	defer db.Close()
 
+	// init service
+	urlService := service.NewUrlService(db)
+
+	handler := handlers.NewUrlHandler(&urlService)
+
 	// init net/http
 	// run server
 	mux := http.NewServeMux()
+
+	mux.HandleFunc("POST /create", handler.Create)
+	mux.HandleFunc("GET /{code}", handler.Redirect)
+
 	err = http.ListenAndServe(config.HTTPServer.Address, mux)
 
 	if err != nil {

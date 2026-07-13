@@ -21,5 +21,6 @@ services:
     ports:
       - "5432:5432"
     environment:
+      POSTGRES_DB: "url_shortener"
       POSTGRES_USER: user
       POSTGRES_PASSWORD: 123
