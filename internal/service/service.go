@@ -3,8 +3,10 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 	"url_shortener/internal/models"
 	"url_shortener/internal/storage"
+	"url_shortener/internal/utils"
 )
 
 type UrlService struct {
@@ -17,12 +19,27 @@ func NewUrlService(storage storage.Storage) UrlService {
 	}
 }
 
-func (srv *UrlService) GetFullUrl(shortUrl string) {
-	srv.storage.GetByCode(context.Background(), shortUrl)
-	fmt.Println("Произошо чтение из кэша, потом из БД и сохранение в кэш, вернулсяя короткий url")
+func (srv *UrlService) GetFullUrl(code string) (string, error) {
+	shortUrlModel, err := srv.storage.GetByCode(context.Background(), code)
+
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+	return shortUrlModel.Url, nil
 }
 
-func (srv *UrlService) GetShortUrl(fullUrl string) {
-	srv.storage.Save(context.Background(), models.URL{})
-	fmt.Println("Произошо сокращение ссылки, она записалась в БД")
+func (srv *UrlService) GetShortUrlCode(fullUrl string) (string, error) {
+	code := utils.GenerateCode(fullUrl)
+	model := models.Url{
+		Code:         code,
+		Url:          fullUrl,
+		CreationTime: time.Now(),
+		Clicks:       0,
+	}
+	err := srv.storage.Save(context.Background(), model)
+	if err != nil {
+		return "", err
+	}
+	return model.Code, nil
 }

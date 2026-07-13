@@ -8,6 +8,7 @@ import (
 	"url_shortener/internal/config"
 	handlers "url_shortener/internal/http"
 	"url_shortener/internal/service"
+	"url_shortener/internal/storage"
 	"url_shortener/internal/storage/postgres"
 )
 
@@ -37,7 +38,10 @@ func main() {
 	defer db.Close()
 
 	// init service
-	urlService := service.NewUrlService(db)
+	bis := storage.NewBuiltInStorage()
+
+	// urlService := service.NewUrlService(db)
+	urlService := service.NewUrlService(bis)
 
 	handler := handlers.NewUrlHandler(&urlService)
 
