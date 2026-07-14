@@ -22,5 +22,11 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_DB: "url_shortener"
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "123"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
