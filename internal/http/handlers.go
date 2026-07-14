@@ -1,10 +1,11 @@
 package http
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
+	"url_shortener/internal/models"
 	"url_shortener/internal/service"
 )
 
@@ -19,9 +20,18 @@ func NewUrlHandler(service *service.UrlService) UrlHandler {
 }
 
 func (h *UrlHandler) Create(w http.ResponseWriter, r *http.Request) {
-	url, _ := io.ReadAll(r.Body)
-	fmt.Printf("create handler: %s\n", url)
-	code, err := h.urlService.GetShortUrlCode(string(url))
+	var request struct {
+		URL string `json:"URL"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	fmt.Println(request.URL)
+
+	urlModel, err := h.urlService.GetShortUrl(request.URL)
 
 	if err != nil {
 		http.Error(w, "failed to create short url", http.StatusInternalServerError)
@@ -29,7 +39,14 @@ func (h *UrlHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	_, err = w.Write([]byte(code))
+
+	shortUrl := r.Host + "/" + urlModel.Code
+	shortUrlResponse := models.ShortURLResponse{
+		URL: shortUrl,
+	}
+	urlJson, _ := json.Marshal(shortUrlResponse)
+
+	_, err = w.Write([]byte(urlJson))
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}
@@ -44,6 +61,5 @@ func (h *UrlHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(url)
 
-	http.Redirect(w, r, url, http.StatusSeeOther)
-	fmt.Println("Redirect handler")
+	http.Redirect(w, r, url.URL, http.StatusSeeOther)
 }

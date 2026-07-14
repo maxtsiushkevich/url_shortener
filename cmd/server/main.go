@@ -49,7 +49,7 @@ func main() {
 	// run server
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /create", handler.Create)
+	mux.HandleFunc("PUT /create", handler.Create)
 	mux.HandleFunc("GET /{code}", handler.Redirect)
 
 	err = http.ListenAndServe(config.HTTPServer.Address, mux)

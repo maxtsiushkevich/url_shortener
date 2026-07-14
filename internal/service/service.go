@@ -19,27 +19,35 @@ func NewUrlService(storage storage.Storage) UrlService {
 	}
 }
 
-func (srv *UrlService) GetFullUrl(code string) (string, error) {
+func (srv *UrlService) GetFullUrl(code string) (models.URL, error) {
 	shortUrlModel, err := srv.storage.GetByCode(context.Background(), code)
-
 	if err != nil {
 		fmt.Println(err)
-		return "", err
+		return models.URL{}, err
 	}
-	return shortUrlModel.Url, nil
+
+	shortUrlModel.Clicks += 1
+	err = srv.storage.Update(context.Background(), shortUrlModel)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return shortUrlModel, nil
 }
 
-func (srv *UrlService) GetShortUrlCode(fullUrl string) (string, error) {
+func (srv *UrlService) GetShortUrl(fullUrl string) (models.URL, error) {
 	code := utils.GenerateCode(fullUrl)
-	model := models.Url{
+
+	model := models.URL{
 		Code:         code,
-		Url:          fullUrl,
+		URL:          fullUrl,
 		CreationTime: time.Now(),
 		Clicks:       0,
 	}
+
 	err := srv.storage.Save(context.Background(), model)
 	if err != nil {
-		return "", err
+		return models.URL{}, err
 	}
-	return model.Code, nil
+	return model, nil
 }

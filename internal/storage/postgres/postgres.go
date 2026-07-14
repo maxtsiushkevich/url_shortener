@@ -25,12 +25,12 @@ func (p *Postgres) Close() {
 	p.conn.Close(context.Background())
 }
 
-func (p *Postgres) Save(ctx context.Context, url models.Url) error {
+func (p *Postgres) Save(ctx context.Context, url models.URL) error {
 	fmt.Println("Save to db")
 	return nil
 }
 
-func (p *Postgres) GetByCode(ctx context.Context, code string) (models.Url, error) {
+func (p *Postgres) GetByCode(ctx context.Context, code string) (models.URL, error) {
 	fmt.Println("Read from db")
-	return models.Url{}, nil
+	return models.URL{}, nil
 }

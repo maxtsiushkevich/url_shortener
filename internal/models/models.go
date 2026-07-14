@@ -2,9 +2,13 @@ package models
 
 import "time"
 
-type Url struct {
+type URL struct {
 	Code         string
-	Url          string
+	URL          string
 	CreationTime time.Time
 	Clicks       int
+}
+
+type ShortURLResponse struct {
+	URL string
 }
